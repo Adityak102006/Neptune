@@ -27,7 +27,7 @@ Neptune is a desktop app that lets you search for visually similar images in you
 
 1. **Clone the repo**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/Neptune.git
+   git clone https://github.com/Adityak102006/Neptune.git
    cd Neptune
    ```
 
