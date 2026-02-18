@@ -125,21 +125,6 @@ Neptune/
 
 ---
 
-## 🚢 Releasing a New Version
-
-```bash
-# 1. Bump version in backend/version.py
-# 2. Commit and tag
-git add -A
-git commit -m "Release v1.1.0"
-git tag v1.1.0
-git push origin master:main --tags
-```
-
-GitHub Actions will automatically build the installer and publish it to [Releases](https://github.com/Adityak102006/Neptune/releases).
-
----
-
 ## 📄 License
 
 MIT
