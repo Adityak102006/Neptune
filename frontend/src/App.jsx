@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import './App.css'
 
 const API_BASE = ''
@@ -19,6 +19,15 @@ function App() {
   const [lightbox, setLightbox] = useState(null)
 
   const fileInputRef = useRef(null)
+
+  // ── Check for updates on mount ────────────────────────
+  const [updateInfo, setUpdateInfo] = useState(null)
+  useEffect(() => {
+    fetch(`${API_BASE}/api/check-update`)
+      .then(r => r.json())
+      .then(data => { if (data.update_available) setUpdateInfo(data) })
+      .catch(() => { })
+  }, [])
 
   // ── Index a folder ─────────────────────────────────────
   const handleIndex = async () => {
@@ -125,6 +134,15 @@ function App() {
           <h1>Neptune</h1>
           <p>Search for visually similar images in your local folders</p>
         </header>
+
+        {/* ── Update Banner ────────────────────────────── */}
+        {updateInfo && (
+          <div className="update-banner">
+            <span>🚀 Neptune v{updateInfo.latest_version} is available!</span>
+            <a href={updateInfo.download_url} target="_blank" rel="noopener noreferrer">Download</a>
+            <button className="update-dismiss" onClick={() => setUpdateInfo(null)}>✕</button>
+          </div>
+        )}
 
         {/* ── Controls ────────────────────────────────── */}
         <div className="controls">

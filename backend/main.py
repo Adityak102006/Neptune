@@ -15,11 +15,13 @@ from pydantic import BaseModel
 
 from .model import embedder
 from .indexer import image_index
+from .version import __version__
+from .updater import check_for_update
 
 # Path to the built frontend
 FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend" / "dist"
 
-app = FastAPI(title="Neptune - Image Similarity Search", version="1.0.0")
+app = FastAPI(title="Neptune - Image Similarity Search", version=__version__)
 
 # CORS for frontend
 app.add_middleware(
@@ -115,6 +117,21 @@ def serve_image(path: str = Query(..., description="Absolute path to local image
             raise HTTPException(status_code=403, detail="Access denied.")
 
     return FileResponse(path)
+
+
+@app.get("/api/version")
+def get_version():
+    """Return the current app version."""
+    return {"version": __version__}
+
+
+@app.get("/api/check-update")
+def get_update_info():
+    """Check if a newer version is available on GitHub."""
+    update = check_for_update()
+    if update:
+        return {"update_available": True, **update}
+    return {"update_available": False, "current_version": __version__}
 
 
 # ── Serve built frontend ────────────────────────────────

@@ -6,6 +6,14 @@ Neptune is a desktop app that lets you search for visually similar images in you
 
 ---
 
+## 📥 Download
+
+**[⬇ Download NeptuneSetup.exe](https://github.com/Adityak102006/Neptune/releases/latest)** — Windows installer, no setup needed.
+
+Just download, install, and run. Neptune opens in your browser automatically.
+
+---
+
 ## ✨ Features
 
 - 🔍 **Visual Search** — Find similar images using deep learning embeddings
@@ -93,11 +101,17 @@ Neptune/
 │   ├── main.py          # FastAPI routes + static file serving
 │   ├── model.py         # MobileNetV2 image embedder
 │   ├── indexer.py       # In-memory similarity index
+│   ├── updater.py       # GitHub release update checker
+│   ├── version.py       # App version
 │   └── requirements.txt
 ├── frontend/
 │   ├── src/App.jsx      # React UI
 │   └── ...
-├── Neptune.bat          # One-click Windows launcher
+├── .github/workflows/   # CI/CD — auto-build installer on tag push
+├── launcher.py          # Desktop app entry point (tray icon)
+├── neptune.spec         # PyInstaller build config
+├── installer.iss        # Inno Setup installer script
+├── Neptune.bat          # One-click dev launcher
 └── README.md
 ```
 
@@ -108,6 +122,21 @@ Neptune/
 1. **Index** — Point Neptune at a folder. It scans all images and extracts 1280-dim feature vectors using MobileNetV2.
 2. **Search** — Upload a query image. Neptune computes its embedding and ranks all indexed images by cosine similarity.
 3. **Results** — View the top matches with similarity scores, click to enlarge.
+
+---
+
+## 🚢 Releasing a New Version
+
+```bash
+# 1. Bump version in backend/version.py
+# 2. Commit and tag
+git add -A
+git commit -m "Release v1.1.0"
+git tag v1.1.0
+git push origin master:main --tags
+```
+
+GitHub Actions will automatically build the installer and publish it to [Releases](https://github.com/Adityak102006/Neptune/releases).
 
 ---
 
