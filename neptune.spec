@@ -16,6 +16,19 @@ block_cipher = None
 torch_data = collect_data_files("torchvision")
 torch_hidden = collect_submodules("torchvision.models")
 
+# Collect pywebview data files (CEF/Edge resources, etc.)
+webview_data = []
+try:
+    webview_data = collect_data_files("webview")
+except Exception:
+    pass
+
+webview_hidden = []
+try:
+    webview_hidden = collect_submodules("webview")
+except Exception:
+    pass
+
 a = Analysis(
     ["launcher.py"],
     pathex=[],
@@ -27,7 +40,7 @@ a = Analysis(
         ("backend", "backend"),
         # Include assets (icon, etc.)
         ("assets", "assets"),
-    ] + torch_data,
+    ] + torch_data + webview_data,
     hiddenimports=[
         "uvicorn",
         "uvicorn.logging",
@@ -48,9 +61,23 @@ a = Analysis(
         "backend.updater",
         "pystray",
         "PIL",
+        # pywebview and its platform backends
         "webview",
+        "webview.platforms",
+        "webview.platforms.edgechromium",
+        "webview.platforms.mshtml",
+        "webview.platforms.winforms",
+        "webview.util",
+        "webview.http",
+        "proxy_tools",
+        "bottle",
         "clr",
-    ] + torch_hidden,
+        "pythonnet",
+        "System",
+        "System.Windows.Forms",
+        "System.Drawing",
+        "System.Threading",
+    ] + torch_hidden + webview_hidden,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

@@ -10,8 +10,12 @@ import os
 import threading
 import time
 import logging
+import traceback
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
+)
 logger = logging.getLogger("Neptune")
 
 HOST = "127.0.0.1"
@@ -31,26 +35,29 @@ def _get_asset_path(filename):
 
 def start_server():
     """Start the uvicorn server."""
-    import uvicorn
-    uvicorn.run(
-        "backend.main:app",
-        host=HOST,
-        port=PORT,
-        log_level="info",
-    )
+    try:
+        import uvicorn
+        uvicorn.run(
+            "backend.main:app",
+            host=HOST,
+            port=PORT,
+            log_level="info",
+        )
+    except Exception:
+        logger.error("Server crashed:\n%s", traceback.format_exc())
 
 
-def wait_for_server(timeout=15):
+def wait_for_server(timeout=20):
     """Block until the server is accepting connections."""
     import urllib.request
     import urllib.error
     start = time.time()
     while time.time() - start < timeout:
         try:
-            urllib.request.urlopen(f"{URL}/api/version", timeout=1)
+            urllib.request.urlopen(f"{URL}/api/version", timeout=2)
             return True
         except Exception:
-            time.sleep(0.3)
+            time.sleep(0.5)
     return False
 
 
@@ -63,10 +70,8 @@ def create_tray_icon(on_quit_callback):
         icon_path = _get_asset_path("neptune.png")
         if os.path.isfile(icon_path):
             img = PilImage.open(icon_path)
-            # Resize for tray
             img = img.resize((64, 64), PilImage.LANCZOS)
         else:
-            # Fallback: draw a simple icon
             from PIL import ImageDraw
             size = 64
             img = PilImage.new("RGBA", (size, size), (0, 0, 0, 0))
@@ -92,11 +97,13 @@ def create_tray_icon(on_quit_callback):
                 pystray.MenuItem("Quit", on_quit),
             ),
         )
-        icon.run_detached()
+        # run_detached runs the tray icon in a separate thread
+        tray_thread = threading.Thread(target=icon.run, daemon=True)
+        tray_thread.start()
         return icon
 
-    except ImportError:
-        logger.info("pystray not available — running without tray icon.")
+    except Exception:
+        logger.warning("Tray icon not available:\n%s", traceback.format_exc())
         return None
 
 
@@ -118,14 +125,16 @@ def main():
     logger.info("Waiting for server to start...")
     if not wait_for_server():
         logger.error("Server failed to start within timeout.")
-        sys.exit(1)
+        # Still try to open — server might just be slow
+        logger.info("Attempting to open anyway...")
+
     logger.info("Server is ready!")
 
     # Try to open in a native webview window
     try:
         import webview
 
-        icon_path = _get_asset_path("neptune.ico")
+        logger.info("pywebview found — launching native window...")
 
         def on_closed():
             """Called when the webview window is closed."""
@@ -147,24 +156,40 @@ def main():
         )
         window.events.closed += on_closed
 
-        # Start webview (blocks until window is closed)
-        webview.start(gui="edgechromium")
+        # Start webview — let pywebview pick the best available backend
+        # Do NOT force gui="edgechromium" as it may not be available
+        webview.start()
 
     except ImportError:
-        logger.warning("pywebview not available — falling back to browser.")
-        import webbrowser
-        webbrowser.open(URL)
+        logger.warning("pywebview not installed — falling back to browser.")
+        _fallback_browser()
+    except Exception:
+        logger.error("pywebview failed:\n%s", traceback.format_exc())
+        logger.info("Falling back to browser...")
+        _fallback_browser()
 
-        # Keep alive with tray icon or console
-        tray = create_tray_icon(lambda: os._exit(0))
-        if tray is None:
-            logger.info(f"Neptune is running at {URL}")
-            logger.info("Press Ctrl+C to quit.")
-            try:
-                while True:
-                    time.sleep(1)
-            except KeyboardInterrupt:
-                pass
+
+def _fallback_browser():
+    """Open in the system browser and keep the process alive."""
+    import webbrowser
+    webbrowser.open(URL)
+
+    tray = create_tray_icon(lambda: os._exit(0))
+    if tray is None:
+        logger.info(f"Neptune is running at {URL}")
+        logger.info("Press Ctrl+C to quit.")
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            pass
+    else:
+        # Keep main thread alive while tray is running
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            pass
 
 
 if __name__ == "__main__":
