@@ -37,8 +37,13 @@ def start_server():
     """Start the uvicorn server."""
     try:
         import uvicorn
+        # Import the app object directly instead of using a string path.
+        # String-based import ("backend.main:app") fails in PyInstaller
+        # frozen bundles because the module resolution doesn't work the
+        # same way as in a normal Python environment.
+        from backend.main import app
         uvicorn.run(
-            "backend.main:app",
+            app,
             host=HOST,
             port=PORT,
             log_level="info",
