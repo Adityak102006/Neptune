@@ -25,6 +25,8 @@ a = Analysis(
         ("frontend/dist", "frontend/dist"),
         # Include backend Python source
         ("backend", "backend"),
+        # Include assets (icon, etc.)
+        ("assets", "assets"),
     ] + torch_data,
     hiddenimports=[
         "uvicorn",
@@ -46,6 +48,8 @@ a = Analysis(
         "backend.updater",
         "pystray",
         "PIL",
+        "webview",
+        "clr",
     ] + torch_hidden,
     hookspath=[],
     hooksconfig={},
@@ -85,7 +89,7 @@ exe = EXE(
     strip=False,
     upx=True,
     console=False,  # No console window — runs in background with tray icon
-    icon=None,      # TODO: Add icon file later
+    icon='assets/neptune.ico',
 )
 
 coll = COLLECT(

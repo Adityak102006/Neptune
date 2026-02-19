@@ -23,7 +23,9 @@ OutputDir=installer_output
 OutputBaseFilename=NeptuneSetup-{#MyAppVersion}
 Compression=lzma2/ultra64
 SolidCompression=yes
+SetupIconFile=assets\neptune.ico
 WizardStyle=modern
+UninstallDisplayIcon={app}\assets\neptune.ico
 ; Require admin for Program Files install
 PrivilegesRequired=admin
 PrivilegesRequiredOverridesAllowed=dialog
@@ -39,9 +41,9 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "dist\Neptune\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\assets\neptune.ico"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; IconFilename: "{app}\assets\neptune.ico"
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#MyAppName}}"; Flags: nowait postinstall skipifsilent
