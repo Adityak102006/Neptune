@@ -21,6 +21,11 @@ Thumbs.db
 .DS_Store
 desktop.ini
 
+# Build artifacts
+build/
+dist/
+installer_output/
+
 # Misc
 .env
 *.log

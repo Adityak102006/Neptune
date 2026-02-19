@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neptune — Local Image Similarity Search</title>
+  <meta name="description" content="Neptune is a desktop app that lets you search for visually similar images in your local folders — like Google Lens, but for your own files." />
+  <meta name="keywords" content="image search, similar images, local search, desktop app, visual search, Neptune" />
+  <meta name="author" content="Adityak102006" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Neptune — Local Image Similarity Search" />
+  <meta property="og:description" content="Find visually similar images in your local folders. Like Google Lens, but private and offline." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://Adityak102006.github.io/Neptune/" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Animated background -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <div class="bg-glow bg-glow-3"></div>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="#" class="nav-brand">
+        <span class="nav-icon">🔱</span>
+        <span class="nav-title">Neptune</span>
+      </a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#tech">Tech Stack</a>
+        <a href="https://github.com/Adityak102006/Neptune" target="_blank" class="nav-github">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-container">
+      <div class="hero-badge">✨ Free & Open Source</div>
+      <h1 class="hero-title">
+        Find Similar Images<br />
+        <span class="hero-gradient">On Your Computer</span>
+      </h1>
+      <p class="hero-subtitle">
+        Neptune is a desktop app that lets you search for visually similar images
+        in your local folders — like <strong>Google Lens</strong>, but completely
+        private and offline.
+      </p>
+      <div class="hero-actions">
+        <a href="https://github.com/Adityak102006/Neptune/releases/latest" class="btn btn-primary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download for Windows
+        </a>
+        <a href="https://github.com/Adityak102006/Neptune" target="_blank" class="btn btn-secondary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          View Source
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-icon">🔒</span>
+          <span class="stat-text">100% Private</span>
+        </div>
+        <div class="stat">
+          <span class="stat-icon">⚡</span>
+          <span class="stat-text">Blazing Fast</span>
+        </div>
+        <div class="stat">
+          <span class="stat-icon">🆓</span>
+          <span class="stat-text">Free Forever</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-badge">Features</span>
+        <h2 class="section-title">Everything you need for<br /><span class="text-gradient">visual image search</span></h2>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🔍</div>
+          <h3>Visual Search</h3>
+          <p>Find similar images using deep learning embeddings powered by MobileNetV2. Just drop in a query image.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📁</div>
+          <h3>Local & Private</h3>
+          <p>Everything runs on your machine. No data leaves your PC — your images stay yours, always.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Fast Indexing</h3>
+          <p>Powered by MobileNetV2 feature extraction for lightning-fast image vectorization and retrieval.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🖼️</div>
+          <h3>Drag & Drop</h3>
+          <p>Drag an image or click to browse. Neptune makes searching as intuitive as it gets.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌑</div>
+          <h3>Modern UI</h3>
+          <p>A clean, dark-themed interface built with React that feels native and responsive.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔄</div>
+          <h3>Auto Updates</h3>
+          <p>Neptune checks for new releases automatically so you always have the latest version.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="how-it-works">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-badge">How It Works</span>
+        <h2 class="section-title">Three simple steps to<br /><span class="text-gradient">find any image</span></h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">01</div>
+          <h3>Index Your Folder</h3>
+          <p>Point Neptune at a folder. It scans all images and extracts 1280-dimensional feature vectors using MobileNetV2.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">02</div>
+          <h3>Upload a Query</h3>
+          <p>Upload a query image. Neptune computes its embedding and ranks all indexed images by cosine similarity.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">03</div>
+          <h3>View Results</h3>
+          <p>Instantly see the top matches with similarity scores. Click on any result to view it full-size.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack Section -->
+  <section id="tech" class="tech-stack">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-badge">Tech Stack</span>
+        <h2 class="section-title">Built with<br /><span class="text-gradient">modern tools</span></h2>
+      </div>
+      <div class="tech-grid">
+        <div class="tech-card">
+          <div class="tech-icon">⚛️</div>
+          <span>React</span>
+        </div>
+        <div class="tech-card">
+          <div class="tech-icon">🐍</div>
+          <span>FastAPI</span>
+        </div>
+        <div class="tech-card">
+          <div class="tech-icon">🔥</div>
+          <span>PyTorch</span>
+        </div>
+        <div class="tech-card">
+          <div class="tech-icon">⚡</div>
+          <span>Vite</span>
+        </div>
+        <div class="tech-card">
+          <div class="tech-icon">🖥️</div>
+          <span>PyInstaller</span>
+        </div>
+        <div class="tech-card">
+          <div class="tech-icon">📦</div>
+          <span>Inno Setup</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta">
+    <div class="section-container">
+      <div class="cta-card">
+        <h2>Ready to explore your images?</h2>
+        <p>Download Neptune today — it's free, open-source, and completely private.</p>
+        <a href="https://github.com/Adityak102006/Neptune/releases/latest" class="btn btn-primary btn-large">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download Neptune
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="section-container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <span class="nav-icon">🔱</span>
+          <span>Neptune</span>
+        </div>
+        <p class="footer-text">Open source under the MIT License.</p>
+        <div class="footer-links">
+          <a href="https://github.com/Adityak102006/Neptune" target="_blank">GitHub</a>
+          <a href="https://github.com/Adityak102006/Neptune/releases" target="_blank">Releases</a>
+          <a href="https://github.com/Adityak102006/Neptune/issues" target="_blank">Issues</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
