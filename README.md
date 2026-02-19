@@ -1,3 +1,14 @@
+---
+title: Neptune
+emoji: 🔱
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+license: mit
+app_port: 7860
+---
+
 # 🔱 Neptune — Local Image Similarity Search
 
 Neptune is a desktop app that lets you search for visually similar images in your local folders — like Google Lens, but for your own files. Drop in a query image and instantly find matches ranked by visual similarity.
