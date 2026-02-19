@@ -8,6 +8,8 @@ function App() {
   const [folderPath, setFolderPath] = useState('')
   const [indexStatus, setIndexStatus] = useState(null) // { type, message }
   const [isIndexing, setIsIndexing] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState('')
+  const folderInputRef = useRef(null)
 
   const [previewUrl, setPreviewUrl] = useState(null)
   const [selectedFile, setSelectedFile] = useState(null)
@@ -29,7 +31,7 @@ function App() {
       .catch(() => { })
   }, [])
 
-  // ── Index a folder ─────────────────────────────────────
+  // ── Index a folder (local mode) ────────────────────────
   const handleIndex = async () => {
     if (!folderPath.trim()) return
     setIsIndexing(true)
@@ -55,6 +57,41 @@ function App() {
       setIndexStatus({ type: 'error', message: 'Cannot connect to backend. Is it running?' })
     } finally {
       setIsIndexing(false)
+    }
+  }
+
+  // ── Upload images (cloud mode) ─────────────────────────
+  const handleUploadImages = async (e) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length === 0) return
+
+    setIsIndexing(true)
+    setUploadProgress(`Uploading ${files.length} images…`)
+    setIndexStatus({ type: 'loading', message: `Uploading ${files.length} images…` })
+
+    try {
+      const formData = new FormData()
+      files.forEach(f => formData.append('files', f))
+
+      const res = await fetch(`${API_BASE}/api/upload-images`, {
+        method: 'POST',
+        body: formData,
+      })
+      const data = await res.json()
+
+      if (res.ok) {
+        setIndexStatus({
+          type: 'success',
+          message: `✓ Uploaded & indexed ${data.indexed_count} images in ${data.elapsed_seconds}s`,
+        })
+      } else {
+        setIndexStatus({ type: 'error', message: data.detail || 'Upload failed' })
+      }
+    } catch (err) {
+      setIndexStatus({ type: 'error', message: 'Upload failed. Check your connection.' })
+    } finally {
+      setIsIndexing(false)
+      setUploadProgress('')
     }
   }
 
@@ -150,30 +187,59 @@ function App() {
           <div className="glass-card">
             <div className="card-title">
               <span>📁</span>
-              <span>Index Folder</span>
+              <span>Index Images</span>
             </div>
-            <div className="index-form">
+
+            {/* Upload Images Button (cloud mode) */}
+            <div className="upload-section">
               <input
-                type="text"
-                className="path-input"
-                placeholder="C:\Users\YourName\Pictures"
-                value={folderPath}
-                onChange={(e) => setFolderPath(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleIndex()}
-                disabled={isIndexing}
+                ref={folderInputRef}
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleUploadImages}
+                style={{ display: 'none' }}
               />
               <button
-                className="btn-primary"
-                onClick={handleIndex}
-                disabled={isIndexing || !folderPath.trim()}
+                className="btn-upload"
+                onClick={() => folderInputRef.current?.click()}
+                disabled={isIndexing}
               >
                 {isIndexing ? (
-                  <><span className="spinner" /> Indexing…</>
+                  <><span className="spinner" /> {uploadProgress || 'Indexing…'}</>
                 ) : (
-                  '⚡ Index'
+                  '📤 Upload Images to Index'
                 )}
               </button>
+              <div className="upload-hint">Select multiple images to index and search through</div>
             </div>
+
+            {/* Local folder path (fallback for desktop mode) */}
+            <details className="local-mode-toggle">
+              <summary>Or enter a local folder path (desktop mode)</summary>
+              <div className="index-form">
+                <input
+                  type="text"
+                  className="path-input"
+                  placeholder="C:\Users\YourName\Pictures"
+                  value={folderPath}
+                  onChange={(e) => setFolderPath(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleIndex()}
+                  disabled={isIndexing}
+                />
+                <button
+                  className="btn-primary"
+                  onClick={handleIndex}
+                  disabled={isIndexing || !folderPath.trim()}
+                >
+                  {isIndexing ? (
+                    <><span className="spinner" /> Indexing…</>
+                  ) : (
+                    '⚡ Index'
+                  )}
+                </button>
+              </div>
+            </details>
             {indexStatus && (
               <div className={`status-badge ${indexStatus.type}`}>
                 {indexStatus.message}

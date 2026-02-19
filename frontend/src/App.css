@@ -198,6 +198,70 @@
   box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
+/* ── Upload Section (cloud mode) ─────────────────────────── */
+.upload-section {
+  text-align: center;
+}
+
+.btn-upload {
+  width: 100%;
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.15), rgba(0, 212, 170, 0.1));
+  border: 2px dashed rgba(108, 99, 255, 0.4);
+  border-radius: var(--radius-md);
+  padding: 1.2rem 1.5rem;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s var(--ease-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-upload:hover {
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.25), rgba(0, 212, 170, 0.18));
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--accent-glow);
+}
+
+.btn-upload:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.upload-hint {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  margin-top: 0.6rem;
+}
+
+/* ── Local Mode Toggle ───────────────────────────────────── */
+.local-mode-toggle {
+  margin-top: 1rem;
+}
+
+.local-mode-toggle summary {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0.4rem 0;
+  transition: color 0.2s;
+}
+
+.local-mode-toggle summary:hover {
+  color: var(--text-secondary);
+}
+
+.local-mode-toggle .index-form {
+  margin-top: 0.75rem;
+}
+
 /* ── Buttons ──────────────────────────────────────────────── */
 .btn-primary {
   background: var(--accent-gradient);

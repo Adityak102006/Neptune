@@ -1,12 +1,15 @@
 """
 FastAPI backend for Local Image Similarity Search.
 Provides endpoints for indexing image directories and searching by similarity.
+Supports both local mode (folder path) and cloud mode (file uploads).
 """
 
 import os
 import io
+import shutil
 import tempfile
 from pathlib import Path
+from typing import List
 from fastapi import FastAPI, UploadFile, File, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
@@ -17,6 +20,10 @@ from .model import embedder
 from .indexer import image_index
 from .version import __version__
 from .updater import check_for_update
+
+# Directory where uploaded images are stored (cloud mode)
+UPLOAD_DIR = Path(tempfile.gettempdir()) / "neptune_uploads"
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 # Path to the built frontend
 FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend" / "dist"
@@ -58,6 +65,45 @@ def index_directory(request: IndexRequest):
 
     try:
         result = image_index.build_index(directory)
+        return {"success": True, **result}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Indexing failed: {str(e)}")
+
+
+@app.post("/api/upload-images")
+async def upload_images(files: List[UploadFile] = File(...)):
+    """Upload multiple images for indexing (cloud mode)."""
+    # Clear previous uploads
+    if UPLOAD_DIR.exists():
+        shutil.rmtree(UPLOAD_DIR)
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+    IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".bmp", ".webp", ".gif", ".tiff"}
+    saved_count = 0
+
+    for f in files:
+        ext = os.path.splitext(f.filename or "")[1].lower()
+        if ext not in IMAGE_EXTENSIONS:
+            continue
+        dest = UPLOAD_DIR / f.filename
+        # Handle duplicate filenames
+        counter = 1
+        while dest.exists():
+            stem = Path(f.filename).stem
+            dest = UPLOAD_DIR / f"{stem}_{counter}{ext}"
+            counter += 1
+        contents = await f.read()
+        dest.write_bytes(contents)
+        saved_count += 1
+
+    if saved_count == 0:
+        raise HTTPException(status_code=400, detail="No valid image files uploaded.")
+
+    # Index the uploaded images
+    try:
+        result = image_index.build_index(str(UPLOAD_DIR))
         return {"success": True, **result}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -151,4 +197,5 @@ if FRONTEND_DIR.is_dir():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)

@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: neptune
+    runtime: docker
+    repo: https://github.com/Adityak102006/Neptune.git
+    branch: main
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: 8000
