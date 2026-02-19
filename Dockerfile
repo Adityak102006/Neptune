@@ -20,8 +20,8 @@ COPY backend/ ./backend/
 # Copy built frontend from stage 1
 COPY --from=frontend-build /app/frontend/dist ./frontend/dist
 
-# Expose port (Render sets PORT env var)
-EXPOSE 8000
+# Hugging Face Spaces uses 7860, Render uses PORT env var
+EXPOSE 7860
 
 # Start the server
-CMD ["sh", "-c", "uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["sh", "-c", "uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-7860}"]
