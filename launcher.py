@@ -1,12 +1,13 @@
 """
 Neptune Desktop Launcher.
-Starts the FastAPI server and opens a native desktop window using pywebview.
-Falls back to the browser if pywebview is not available.
+Starts the FastAPI server and opens a dedicated app window (via Edge/Chrome app mode).
+Shows a system tray icon for quick access and quitting.
 This is the entry point when running the packaged app.
 """
 
 import sys
 import os
+import subprocess
 import threading
 import time
 import logging
@@ -26,7 +27,6 @@ URL = f"http://{HOST}:{PORT}"
 def _get_asset_path(filename):
     """Resolve path to a bundled asset file (works for dev and PyInstaller)."""
     if getattr(sys, "frozen", False):
-        # Running as a PyInstaller bundle
         base = sys._MEIPASS
     else:
         base = os.path.dirname(os.path.abspath(__file__))
@@ -37,10 +37,6 @@ def start_server():
     """Start the uvicorn server."""
     try:
         import uvicorn
-        # Import the app object directly instead of using a string path.
-        # String-based import ("backend.main:app") fails in PyInstaller
-        # frozen bundles because the module resolution doesn't work the
-        # same way as in a normal Python environment.
         from backend.main import app
         uvicorn.run(
             app,
@@ -55,7 +51,6 @@ def start_server():
 def wait_for_server(timeout=20):
     """Block until the server is accepting connections."""
     import urllib.request
-    import urllib.error
     start = time.time()
     while time.time() - start < timeout:
         try:
@@ -63,6 +58,47 @@ def wait_for_server(timeout=20):
             return True
         except Exception:
             time.sleep(0.5)
+    return False
+
+
+def open_app_window():
+    """
+    Open Neptune in a standalone app window using Edge or Chrome --app mode.
+    This removes the address bar, tabs, and browser chrome so it looks
+    like a native desktop application. Edge is pre-installed on Windows 10/11.
+    Falls back to the default browser if neither Edge nor Chrome is found.
+    """
+    # Possible browser paths on Windows (Edge is always available on Win10/11)
+    browser_candidates = [
+        # Microsoft Edge (most reliable — pre-installed on Windows 10/11)
+        os.path.join(os.environ.get("ProgramFiles(x86)", ""), "Microsoft", "Edge", "Application", "msedge.exe"),
+        os.path.join(os.environ.get("ProgramFiles", ""), "Microsoft", "Edge", "Application", "msedge.exe"),
+        # Google Chrome
+        os.path.join(os.environ.get("ProgramFiles(x86)", ""), "Google", "Chrome", "Application", "chrome.exe"),
+        os.path.join(os.environ.get("ProgramFiles", ""), "Google", "Chrome", "Application", "chrome.exe"),
+        os.path.join(os.environ.get("LOCALAPPDATA", ""), "Google", "Chrome", "Application", "chrome.exe"),
+    ]
+
+    for browser_path in browser_candidates:
+        if browser_path and os.path.isfile(browser_path):
+            logger.info("Opening app window with: %s", browser_path)
+            try:
+                subprocess.Popen([
+                    browser_path,
+                    f"--app={URL}",
+                    "--new-window",
+                    "--disable-extensions",
+                    "--disable-default-apps",
+                ])
+                return True
+            except Exception:
+                logger.warning("Failed to launch %s:\n%s", browser_path, traceback.format_exc())
+                continue
+
+    # Fallback: open in default browser (with normal browser chrome)
+    logger.warning("No Edge/Chrome found — falling back to default browser.")
+    import webbrowser
+    webbrowser.open(URL)
     return False
 
 
@@ -85,8 +121,7 @@ def create_tray_icon(on_quit_callback):
             draw.ellipse([18, 18, size - 18, size - 18], fill=(30, 58, 138))
 
         def on_open(icon, item):
-            import webbrowser
-            webbrowser.open(URL)
+            open_app_window()
 
         def on_quit(icon, item):
             icon.stop()
@@ -102,9 +137,6 @@ def create_tray_icon(on_quit_callback):
                 pystray.MenuItem("Quit", on_quit),
             ),
         )
-        # run_detached runs the tray icon in a separate thread
-        tray_thread = threading.Thread(target=icon.run, daemon=True)
-        tray_thread.start()
         return icon
 
     except Exception:
@@ -130,66 +162,21 @@ def main():
     logger.info("Waiting for server to start...")
     if not wait_for_server():
         logger.error("Server failed to start within timeout.")
-        # Still try to open — server might just be slow
         logger.info("Attempting to open anyway...")
+    else:
+        logger.info("Server is ready!")
 
-    logger.info("Server is ready!")
+    # Open the app in a standalone window (Edge/Chrome --app mode)
+    open_app_window()
 
-    # Try to open in a native webview window
-    try:
-        import webview
-
-        logger.info("pywebview found — launching native window...")
-
-        def on_closed():
-            """Called when the webview window is closed."""
-            logger.info("Window closed. Shutting down...")
-            os._exit(0)
-
-        # Create tray icon that can quit the app
-        tray = create_tray_icon(lambda: os._exit(0))
-
-        # Create the native window
-        window = webview.create_window(
-            "Neptune — Image Search",
-            URL,
-            width=1280,
-            height=800,
-            min_size=(900, 600),
-            resizable=True,
-            text_select=True,
-        )
-        window.events.closed += on_closed
-
-        # Start webview — let pywebview pick the best available backend
-        # Do NOT force gui="edgechromium" as it may not be available
-        webview.start()
-
-    except ImportError:
-        logger.warning("pywebview not installed — falling back to browser.")
-        _fallback_browser()
-    except Exception:
-        logger.error("pywebview failed:\n%s", traceback.format_exc())
-        logger.info("Falling back to browser...")
-        _fallback_browser()
-
-
-def _fallback_browser():
-    """Open in the system browser and keep the process alive."""
-    import webbrowser
-    webbrowser.open(URL)
-
+    # Run tray icon on the main thread (blocks until Quit)
     tray = create_tray_icon(lambda: os._exit(0))
-    if tray is None:
+    if tray:
+        tray.run()
+    else:
+        # No tray icon — keep alive via console
         logger.info(f"Neptune is running at {URL}")
         logger.info("Press Ctrl+C to quit.")
-        try:
-            while True:
-                time.sleep(1)
-        except KeyboardInterrupt:
-            pass
-    else:
-        # Keep main thread alive while tray is running
         try:
             while True:
                 time.sleep(1)

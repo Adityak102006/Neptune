@@ -2,7 +2,7 @@
 ; Creates a Windows installer for Neptune
 
 #define MyAppName "Neptune"
-#define MyAppVersion "1.1.2"
+#define MyAppVersion "1.1.3"
 #define MyAppPublisher "Adityak102006"
 #define MyAppURL "https://github.com/Adityak102006/Neptune"
 #define MyAppExeName "Neptune.exe"
