@@ -48,6 +48,7 @@ a = Analysis(
         "backend.updater",
         "pystray",
         "PIL",
+        "multiprocessing",
     ] + torch_hidden,
     hookspath=[],
     hooksconfig={},
